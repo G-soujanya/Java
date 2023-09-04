@@ -1,12 +1,17 @@
 import java.net.*;
 import java.io.*;
-class ReverseEcho 
+class ReverseEcho extends Thread
 {
-    public static void main(String args[]) throws Exception
+    Socket stk;
+    public ReverseEcho(Socket st)
     {
-        ServerSocket ss=new ServerSocket(2000);
-        Socket stk=ss.accept();
-        BufferedReader br=new BufferedReader(new InputStreamReader(stk.getInputStream()));
+        stk=st;
+    }
+
+    public void run()
+    {
+        try{
+            BufferedReader br=new BufferedReader(new InputStreamReader(stk.getInputStream()));
         PrintStream ps=new PrintStream(stk.getOutputStream());
         String msg;
         StringBuilder sb;
@@ -19,5 +24,23 @@ class ReverseEcho
             ps.println(msg);
         }while(!msg.equals("dne"));
         stk.close();
+        }
+        catch(Exception e)
+        {
+        
+        };
+    }
+    public static void main(String args[]) throws Exception
+    {
+        ServerSocket ss=new ServerSocket(2000);
+        Socket stk;
+        int count=1;
+        ReverseEcho re;
+        do{
+        stk=ss.accept();
+        System.out.println("client connected"+count++);
+        re=new ReverseEcho(stk);
+        re.start();
+        }while(true);
     }
 }
